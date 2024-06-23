@@ -1,0 +1,2 @@
+{'Codigo da disciplina': '2', 'nome': 'p2', 'Codigo da turma': '3', 'Ano': '2024', 'Semestre': '1', 'Hora': '12', 'Avaliacoes': {'Avaliacao 1': 'p1', 'Peso 1': 0.4, 'Avaliacao 2': 'p2', 'Peso 2': 0.6}, 'Nota Final': '  0.4*p1  0.6*p2 /1.0'}
+{'Codigo da disciplina': 'rafael', 'nome': 'p3', 'Codigo da turma': '2', 'Ano': '2024', 'Semestre': '1', 'Hora': '14', 'Avaliacoes': {'Avaliacao 1': 'p1', 'Peso 1': 0.3, 'Avaliacao 2': 'p2', 'Peso 2': 0.5, 'Avaliacao 3': 'p3', 'Peso 3': 0.6}, 'Nota Final': '  0.3*p1  0.5*p2  0.6*p3 /1.4'}
