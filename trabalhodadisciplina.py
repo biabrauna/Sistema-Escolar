@@ -38,6 +38,8 @@ def cadastroTurma():
         turma = open('turmas.txt','a')
         turma.write(f'{infoTurma}')
         turma.write(f"\n")
+        turma.write(codigoT)
+        turma.write(f"\n")
         turma.close()
         op = input("Deseja cadastrar outra turma(s/n)?")
     menuProfessor()
@@ -75,7 +77,8 @@ def edicaoTurma():
                     linha[5] = hora
                 elif op == '6':
                     avaliacoes = {}
-                    notaFinal = " "
+                    nota_soma = ""
+                    notaFinal = ""
                     num_avaliacoes = int(input("Digite o numero de avaliacoes: "))
                     while i!=num_avaliacoes:
                         peso = float(input("Digite o peso da avaliação: "))
@@ -87,7 +90,7 @@ def edicaoTurma():
                         if i != num_avaliacoes-1:
                             nota_soma += '+'
                         soma_pesos += peso
-                    notaFinal = f'{nota_soma}/{soma_pesos}
+                    notaFinal += f'{nota_soma}/{soma_pesos}'
                     linha[7] = notaFinal
                     linha[6] = avaliacoes
                 else:
@@ -96,15 +99,17 @@ def edicaoTurma():
 
 def excTurma():
     codigoT = input("Digite o código da turma: ")
-    turma = open('turmas.txt','r')
-    linhas = turma.readlines()
-    turma = open('turmas.txt','w')
+    with open('turmas.txt', 'r') as turma:
+        linhas = turma.readlines()
     t=False
-    for linha in linhas:
-        if linha[2]!=codigoT:
-            turma.write(linha)
-        if linha[2]==codigoT:
-            t=True
+    with open('turmas.txt', 'w') as turma:
+        for i in range(len(linhas)):
+            if linhas[i] == '{':
+                if linhas[i+1]!=codigoT:
+                    turma.write(linhas[i])
+                    turma.write(linhas[i+1])
+                if linhas[i+1]==codigoT:
+                    t=True
     if t:
         print("Turma excluida com sucesso.")
     else:
@@ -121,6 +126,7 @@ def cadastrarAlunos():
         if op =='1':
             nome = input("Digite o nome completo do aluno:")
             DRE = input("Digite o DRE do aluno:")
+
         elif op =='2':
             nome = input("Digite o nome completo do aluno:")
             DRE = input("Digite o DRE do aluno:")
@@ -217,17 +223,17 @@ def identificacao():
             c=False
             avaliacoes = {}
             with open('alunos.txt', 'r') as cadastro:
-            linhas = cadastro.readlines()
-            for linha in linhas:
-                if linha[0].lower() == login.lower() and linha[1].lower() == senha.lower():
-                    c = True
-                    print("Login bem-sucedido.")
-                    b = False
-                    cadastro.close()
-                    break
-            if not c:
-                print("Usuário ou/e senha incorretos, digite novamente.")
-        menuAluno()
+                linhas = cadastro.readlines()
+                for linha in linhas:
+                    if linha[0].lower() == login.lower() and linha[1].lower() == senha.lower():
+                        c = True
+                        print("Login bem-sucedido.")
+                        b = False
+                        cadastro.close()
+                        break
+                if not c:
+                    print("Usuário ou/e senha incorretos, digite novamente.")
+            menuAluno()
     elif tipo.lower() == 'professor':
         b=True
         #Adicionar opcao de cadastrar aluno
