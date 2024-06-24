@@ -117,8 +117,8 @@ def excTurma():
     menuProfessor()
 
 def cadastrarAlunos():
-    
-    while op!='n':
+    op = 's'
+    while op != 'n':
         print("1 - Para modificar as notas de um aluno.")
         print("2 - Para modificar as frequências de um aluno.")
         print("3 - Cadastrar outro aluno.")
@@ -126,31 +126,132 @@ def cadastrarAlunos():
         if op =='1':
             nome = input("Digite o nome completo do aluno:")
             DRE = input("Digite o DRE do aluno:")
-
+            with open('alunos.txt', 'r') as alunos:
+                for aluno in alunos:
+                    al = aluno.split(',')
+                    if al[0].lower() == nome.lower() and al[1].lower == DRE.lower():
+                        print(aluno)
+                        numero = float(input("Digite qual o numero da avaliação que deseja alterar (1,2,3,...): "))
+                        nota = float(input("Digite a nova nota: "))
+                        al[1+numero] = nota
+                    else:
+                        with open('alunos.txt', 'w') as alunos:
+                            alunos.write(aluno)
+                    alunos.write(al)
         elif op =='2':
             nome = input("Digite o nome completo do aluno:")
             DRE = input("Digite o DRE do aluno:")
-        
+            with open('alunos.txt', 'r') as alunos:
+                for aluno in alunos:
+                    al = aluno.split(',')
+                    if al[0].lower() == nome.lower() and al[1].lower == DRE.lower():
+                        print(aluno)
+                        numero = float(input("Digite qual o numero da frequência que deseja alterar (1,2,3,...)(DE TRÁS PARA FRENTE): "))
+                        freq = float(input("Digite a nova frequência (0/1): "))
+                        al[len(al)-numero] = freq
+                    else:
+                        with open('alunos.txt', 'w') as alunos:
+                            alunos.write(aluno) 
+                    alunos.write(al)
+                        
+        elif op == '3':
+            nome = input("Digite o nome completo do aluno:")
+            DRE = input("Digite o DRE do aluno:")
+            notas = input("Digite as notas, e 'n' caso não queira adicionar nenhuma: ")
+            freq = input("Digite as frequências, e 'n' caso não queira adicionar nenhuma: ") 
+            al = [nome, DRE]
+            with open('alunos.txt', 'w') as alunos:
+                if notas != 'n':
+                    notas = notas.split('')
+                    al += [notas]
+                    if freq != 'n':
+                        freq = freq.split('')
+                        al += [freq]
+                alunos.write(al)
+        else:
+            op = input("Opção incorreta, pressione 'n' para sair.")
     menuProfessor()
 
 def lancarNotas():
-    # Função de lançar notas
+    op = 's'
+    with open('alunos.txt', 'r') as alunos:
+        while op != 'n':
+            codigoT = input("Digite o codigo da turma que deseja lançar notas:")
+            for aluno in alunos:
+                al = aluno.split(',')
+                if al[1][0] == codigoT:
+                    print(aluno)
+                    notas = float(input("Digite as notas: "))
+                    notas = notas.split('')
+                    for i in range(len(al)):
+                        alu += [al[i]]
+                    alu += [notas]
+                else:
+                    with open('alunos.txt', 'r') as alunos:
+                        alunos.write(aluno)
+                alunos.write(alu)
+            op = input("Pressione 'n' para sair, 's' para continuar.")
     menuProfessor()
 
 def lancarFrequencias():
-    # Função de lançar frequências
+    op = 's'
+    with open('alunos.txt', 'r') as alunos:
+        while op != 'n':
+            # Adicionar porcentagem de frequência
+            codigoT = input("Digite o codigo da turma que deseja lançar as frequências:")
+            for aluno in alunos:
+                al = aluno.split(',')
+                if al[1][0] == codigoT:
+                    print(aluno)
+                    freq = float(input("Digite as frequências (0/1): "))
+                    freq = freq.split('')
+                    for i in range(len(al)):
+                        alu += [al[i]]
+                    alu += [freq]
+                else:
+                    with open('alunos.txt', 'w') as alunos:
+                        alunos.write(aluno)
+                alunos.write(alu)
+            op = input("Pressione 'n' para sair, 's' para continuar.")
     menuProfessor()
 
 def notas():
-    # Função para ver notas
+    nome = input("Digite o seu nome completo:")
+    DRE = input("Digite o seu DRE:")
+    with open('alunos.txt', 'r') as alunos:
+        for aluno in alunos:
+            al = aluno.split(',')
+            if al[0].lower() == nome.lower() and al[1].lower == DRE.lower():
+                print(aluno)
     menuAluno()
 
 def calculoNotas():
-    # Função para cálculo de notas
+    op = 's'
+    while op != 'n':
+        codigoD = input("Digite o código da disciplina para exibir a nota final: ")
+        with open('turmas.txt', 'r') as turma:
+            linhas = turma.readlines()
+            for linha in linhas:
+                infoTurma = ast.literal_eval(linha.strip())
+                if infoTurma['Codigo da disciplina'] == codigoD:
+                    print(f"Nota Final da disciplina {codigoD}: {infoTurma['Nota Final']}")
+            op = input("Pressione 'n' para sair, 's' para continuar.")
+            print("Disciplina não encontrada.")
     menuAluno()
 
 def frequencia():
-    # Função para ver frequência
+    op = 's'
+    while op != 'n':
+        codigoD = input("Digite o código da disciplina para exibir a frequencia: ")
+        DRE = input("Digite o seu DRE: ")
+        with open('turmas.txt', 'r') as turma:
+            linhas = turma.readlines()
+            for linha in linhas:
+                infoTurma = ast.literal_eval(linha.strip())
+                if infoTurma['Codigo da disciplina'] == codigoD:
+                    print(f"Nota Final da disciplina {codigoD}: {infoTurma['Nota Final']}")
+            op = input("Pressione 'n' para sair, 's' para continuar.")
+            print("Disciplina não encontrada.")
     menuAluno()
 
 def pontosNecessarios():
@@ -184,8 +285,6 @@ def menuProfessor():
         op = input("Digite s/n se deseja continuar.")
     identificacao()
 
-
-
 def menuAluno():
     
     op = 's'
@@ -206,8 +305,6 @@ def menuAluno():
         else:
             print("Opção errada.")
         op = input("Digite s/n se deseja continuar.")
-
-
 
 def identificacao():
     tipo = input("Informe aluno, professor ou sair se desejar encerrar o programa: ")
