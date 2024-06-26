@@ -7,127 +7,125 @@ from termcolor import colored
 # Dicionário global para armazenar as frequências
 frequencias_globais = {}
 
-def ler_arquivos():
-    with open('alunos.txt','r') as file_alunos, open('professores.txt','r') as file_professores, open('turmas.txt','r') as file_turmas:
-        alunos = file_alunos.readlines()
-        professores = file_professores.readlines()
-        turmas = file_turmas.readlines()
-    return alunos, professores, turmas
-
-
-def cadastroTurma(alunos,professores,turmas):
+def cadastroTurma():
     op = 's'
     while op != 'n':
         codigoD = input("Digite o código da disciplina: ")
         nome = input("Digite o nome da disciplina: ")
         codigoT = input("Digite o código da turma: ")
         ano = input("Digite o ano em que a disciplina está sendo ofertada: ")
-        dias = int(input("Numerode aulas na semana: "))
+        dias = int(input("Número de aulas na semana: "))
+        dias_aulas = []
         for i in range(dias):
-            dia = input(f'Digite o {i+1} dia de aula (dd/mm/year): ')
-            dia[f'{dia}'] = 'n'
+            dia = input(f'Digite o {i+1}º dia de aula (ex: segunda, terça): ')
+            dias_aulas.append(dia)
         semestre = input("Digite o semestre em que a disciplina está sendo ofertada: ")
         hora = input("Digite a hora em que a disciplina está sendo oferecida: ")
-        num_avaliacoes = int(input("Quantas avaliaçoes tem? "))
-        i=0
+        num_avaliacoes = int(input("Quantas avaliações tem? "))
         avaliacoes = {}
-        nota_soma = " "
+        nota_soma = ""
         soma_pesos = 0
-        while i!=num_avaliacoes:
-            peso = float(input("Digite o peso da avaliação: "))
-            nomeA = input(f"Digite o nome/tipo da avaliaçao {i+1}: ")
+        for i in range(num_avaliacoes):
+            peso = float(input(f"Digite o peso da avaliação {i+1}: "))
+            nomeA = input(f"Digite o nome/tipo da avaliação {i+1}: ")
             avaliacoes[f'Avaliacao {i+1}'] = nomeA
             avaliacoes[f'Peso {i+1}'] = peso
-            i+=1
             nota_soma += f' {peso}*{nomeA} '
-            if i != num_avaliacoes-1:
+            if i != num_avaliacoes - 1:
                 nota_soma += '+'
             soma_pesos += peso
         notaFinal = f'{nota_soma}/{soma_pesos}'
-        infoTurma = {}
-        infoTurma['Codigo da disciplina'] = codigoD
-        infoTurma['Nome'] = nome
-        infoTurma['Codigo da turma'] = codigoT
-        infoTurma['Ano'] = ano
-        infoTurma['Semestre'] = semestre
-        infoTurma['Dias'] = dias
-        infoTurma['Hora'] = hora
-        infoTurma['Avaliacoes'] = avaliacoes
-        infoTurma['Nota final'] = notaFinal
-        turma = open('turmas.txt','a')
-        turma.write(f'{infoTurma}\n')
-        turma.close()
-        op = input("Deseja cadastrar outra turma(s/n)?")
-    menuProfessor(alunos,professores,turmas)
+        infoTurma = {
+            'Codigo da disciplina': codigoD,
+            'Nome': nome,
+            'Codigo da turma': codigoT,
+            'Ano': ano,
+            'Semestre': semestre,
+            'Dias': dias_aulas,
+            'Hora': hora,
+            'Avaliacoes': avaliacoes,
+            'Nota final': notaFinal
+        }
+        with open('turmas.txt', 'a') as turma:
+            turma.write(f'{infoTurma}\n')
+        op = input("Deseja cadastrar outra turma (s/n)? ")
+    menuProfessor()
 
-def edicaoTurma(turmas):
-    b=True
-    codigoT = input("Digite o codigo da turma que deseja editar: ")
-    turma = open('turmas.txt','w')
-    for linha in turmas:
-        informacoes = ast.literal_eval(linha.strip())
-        if informacoes['Codigo da turma'] == codigoT:
-            while b:
-                print("1 - Codigo da disciplina")
-                print("2 - Nome")
-                print("3 - Ano")
-                print("4 - Semestre")
-                print("5 - Hora")
-                print("6 - Avaliacoes")
-                print("7 - Sair")
-                op = input("Digite o que deseja editar: ")
-                if op == '1':
-                    codigoD = input("Digite o novo codigo: ")
-                    informacoes['Codigo da disciplina'] = codigoD
-                elif op == '2':
-                    nome = input("Digite o nome da disciplina: ")
-                    informacoes['Nome'] = nome
-                elif op == '4':
-                    semestre = input("Digite o semestre: ")
-                    informacoes['Semestre'] = semestre
-                elif op == '3':
-                    ano = input("Digite o ano: ")
-                    informacoes['Ano'] = ano
-                elif op == '5':
-                    hora = input("Digite a hora: ")
-                    informacoes['Hora'] = hora
-                elif op == '6':
-                    avaliacoes = {}
-                    nota_soma = ""
-                    notaFinal = ""
-                    num_avaliacoes = int(input("Digite o numero de avaliacoes: "))
-                    while i!=num_avaliacoes:
-                        peso = float(input("Digite o peso da avaliação: "))
-                        nome = input(f"Digite o nome/tipo da avaliaçao {i+1}: ")
-                        avaliacoes[f'Avaliacao {i+1}'] = nome
-                        avaliacoes[f'Peso {i+1}'] = peso
-                        i+=1
-                        nota_soma += f' {peso}*{nome} ' 
-                        if i != num_avaliacoes-1:
-                            nota_soma += '+'
-                        soma_pesos += peso
-                    notaFinal += f'{nota_soma}/{soma_pesos}'
-                    informacoes['Nota final'] = notaFinal
-                    informacoes['Avaliacoes'] = avaliacoes
-    menuProfessor(turmas)
-#incompleto
-
-def excTurma(alunos,professores,turmas):
-    codigoT = input("Digite o código da turma: ")
-    t=False
+def edicaoTurma():
+    b = True
+    codigoT = input("Digite o código da turma que deseja editar: ")
+    with open('turmas.txt', 'r') as turma:
+        linhas = turma.readlines()
     with open('turmas.txt', 'w') as turma:
-        for i in range(len(turmas)):
-            if turmas[i] == '{':
-                if turmas[i+1]!=codigoT:
-                    turma.write(turmas[i])
-                    turma.write(turmas[i+1])
-                if turmas[i+1]==codigoT:
-                    t=True
-    if t:
-        print("Turma excluida com sucesso.")
+        for linha in linhas:
+            informacoes = ast.literal_eval(linha.strip())
+            if informacoes['Codigo da turma'] == codigoT:
+                while b:
+                    print("1 - Código da disciplina")
+                    print("2 - Nome")
+                    print("3 - Ano")
+                    print("4 - Semestre")
+                    print("5 - Hora")
+                    print("6 - Avaliações")
+                    print("7 - Sair")
+                    op = input("Digite o que deseja editar: ")
+                    if op == '1':
+                        codigoD = input("Digite o novo código: ")
+                        informacoes['Codigo da disciplina'] = codigoD
+                    elif op == '2':
+                        nome = input("Digite o nome da disciplina: ")
+                        informacoes['Nome'] = nome
+                    elif op == '4':
+                        semestre = input("Digite o semestre: ")
+                        informacoes['Semestre'] = semestre
+                    elif op == '3':
+                        ano = input("Digite o ano: ")
+                        informacoes['Ano'] = ano
+                    elif op == '5':
+                        hora = input("Digite a hora: ")
+                        informacoes['Hora'] = hora
+                    elif op == '6':
+                        avaliacoes = {}
+                        nota_soma = ""
+                        soma_pesos = 0
+                        num_avaliacoes = int(input("Digite o número de avaliações: "))
+                        for i in range(num_avaliacoes):
+                            peso = float(input(f"Digite o peso da avaliação {i+1}: "))
+                            nomeA = input(f"Digite o nome/tipo da avaliação {i+1}: ")
+                            avaliacoes[f'Avaliacao {i+1}'] = nomeA
+                            avaliacoes[f'Peso {i+1}'] = peso
+                            nota_soma += f' {peso}*{nomeA} '
+                            if i != num_avaliacoes - 1:
+                                nota_soma += '+'
+                            soma_pesos += peso
+                        notaFinal = f'{nota_soma}/{soma_pesos}'
+                        informacoes['Nota final'] = notaFinal
+                        informacoes['Avaliacoes'] = avaliacoes
+                    else:
+                        b = False
+                        break
+                turma.write(f'{informacoes}\n')
+            else:
+                turma.write(f'{informacoes}\n')
+    menuProfessor()
+
+def excTurma():
+    codigoT = input("Digite o código da turma: ")
+    with open('turmas.txt', 'r') as turma:
+        linhas = turma.readlines()
+    with open('turmas.txt', 'w') as turma:
+        turma_encontrada = False
+        for linha in linhas:
+            informacoes = ast.literal_eval(linha.strip())
+            if informacoes['Codigo da turma'] != codigoT:
+                turma.write(f'{informacoes}\n')
+            else:
+                turma_encontrada = True
+    if turma_encontrada:
+        print("Turma excluída com sucesso.")
     else:
         print("Turma não encontrada.")
-    menuProfessor(alunos,professores,turmas)
+    menuProfessor()
 
 def gerar_frequencias(dias_aulas):
     frequencias = {}
@@ -150,93 +148,82 @@ def gerar_frequencias(dias_aulas):
     while data_atual <= fim:
         if data_atual.weekday() in dias_indices:
             frequencias[data_atual.strftime('%d/%m/%Y')] = 2 # Presença não lançada
-        data_atual += timedelta(days=0)
+        data_atual += timedelta(days=1)
 
     return frequencias
 
-def Alunos(alunos,professores,turmas):
+def Alunos():
     op = 's'
-    #adicionar codigoD
     while op != 'n':
         print("1 - Para modificar as notas de um aluno.")
         print("2 - Para modificar as frequências de um aluno.")
         print("3 - Cadastrar um aluno.")
         op = input("Digite o número e 'n' para voltar ao menu inicial: ")
         with open('alunos.txt', 'r') as alunos:
-                linhas = alunos.readlines()
-        with open('alunos.txt', 'w') as alunos:
-            if op =='1':
-                    for linha in linhas:
-                        print(linha)
-                    DRE = input("Digite o DRE do aluno:")
-                    for linha in linhas:
-                        al = ast.literal_eval(linha.strip())
-                        if al['DRE'] == DRE:
-                            print(al)
-                            if 'Notas' in al:
-                                numero = float(input("Digite qual o numero da avaliação que deseja alterar (1,2,3,...): "))
-                                nota = float(input("Digite a nova nota: "))
+            linhas = alunos.readlines()
+        if op == '1':
+            DRE = input("Digite o DRE do aluno: ")
+            with open('alunos.txt', 'w') as alunos:
+                for linha in linhas:
+                    al = ast.literal_eval(linha.strip())
+                    if al['DRE'] == DRE:
+                        print(al)
+                        if 'Notas' in al:
+                            numero = int(input("Digite o número da avaliação que deseja alterar (1,2,3,...): "))
+                            nota = float(input("Digite a nova nota: "))
+                            if len(al['Notas']) >= numero:
                                 al['Notas'][numero-1] = nota
                             else:
-                                print("O aluno ainda não tem notas lançadas.")
-                                al['Notas'] = []
+                                print("Número de avaliação inválido.")
                         else:
-                            with open('alunos.txt', 'w') as alunos:
-                                alunos.write(linha)
-                        alunos.write(f'{al}\n')
-            elif op =='2':
-                    for linha in linhas:
-                        print(linha)
-                    DRE = input("Digite o DRE do aluno:")
-                    for linha in linhas:
-                        al = ast.literal_eval(linha.strip())
-                        while b != 'n':
-                            print(formatarCalendario(al['Frequencias']))
-                            freq_data = input("Digite a data (dd/mm/yyyy): ")
-                            freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
-                            al['Frequencias'][f'{freq_data}'] = freq_status
-                            print(formatarCalendario(al['Frequencias']))
-                            alunos.write(f'{al}\n')
-                            b = input("Digite s/n para continuar ou não.")
-                    
-            elif op == '3':
-                codigoD = input("Digite o codigo da disciplina: ")
-                codigoT = input("Digite o codigo da turma: ")
-                nomeA = input("Digite o nome completo do aluno:")
-                DRE = input("Digite o DRE do aluno:")
-                # problema grave
-                prof_dict = ast.literal_eval(professores.strip())
-                disciplinas = prof_dict['Disciplinas']
-
-                # Acessar a disciplina específica (comp3)
-                disciplina = disciplinas['comp3']
-
-                # Acessar a turma específica (23)
-                turma = disciplina[f'{codigoD}']
-                al = { 'Nome': nomeA, 
-                        'DRE': DRE,
-                        'Codigo da disciplina': codigoD,
-                        'Codigo da turma': codigoT,
-                        'Frequencias': turma
-                }
-                with open('alunos.txt', 'a') as alunos:
-                    alunos.write(f'{al}')
-                print("Aluno cadastrado com sucesso.")
-
+                            print("O aluno ainda não tem notas lançadas.")
+                            al['Notas'] = []
+                    alunos.write(f'{al}\n')
+        elif op == '2':
+            DRE = input("Digite o DRE do aluno: ")
+            with open('alunos.txt', 'w') as alunos:
+                for linha in linhas:
+                    al = ast.literal_eval(linha.strip())
+                    if al['DRE'] == DRE:
+                        print(formatarCalendario(al['Frequencias']))
+                        freq_data = input("Digite a data (dd/mm/yyyy): ")
+                        freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
+                        al['Frequencias'][f'{freq_data}'] = freq_status
+                        print(formatarCalendario(al['Frequencias']))
+                    alunos.write(f'{al}\n')
+        elif op == '3':
+            codigoD = input("Digite o código da disciplina: ")
+            codigoT = input("Digite o código da turma: ")
+            nome = input("Digite o nome completo do aluno: ")
+            DRE = input("Digite o DRE do aluno: ")
+            if codigoD in frequencias_globais:
+                frequencias = frequencias_globais[codigoD]
             else:
-                op = input("Opção incorreta, pressione 'n' para sair.")
-    menuProfessor(alunos,professores,turmas)
+                frequencias = gerar_frequencias(dias_aulas)
+                frequencias_globais[codigoD] = frequencias
+            al = {
+                'Nome': nome,
+                'DRE': DRE,
+                'Codigo da disciplina': codigoD,
+                'Codigo da turma': codigoT,
+                'Frequencias': frequencias
+            }
+            with open('alunos.txt', 'a') as alunos:
+                alunos.write(f'{al}\n')
+            print("Aluno cadastrado.")
+        else:
+            op = input("Opção incorreta, pressione 'n' para sair.")
 
-print(frequencias_globais)
-
-def lancarFrequencias(alunos,professores,turmas):
+def lancarFrequencias():
     op = 's'
     while op != 'n':
 
         codigoD = input("Digite o codigo da disciplina que deseja lançar as frequências:")
         codigoT = input("Digite o codigo da turma:")
         
-        
+        freq_data = input("Digite a data (dd/mm/yyyy): ")
+        freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
+
         # Ler todos os alunos
         with open('alunos.txt', 'r') as alunos:
             linhas = alunos.readlines()
@@ -249,8 +236,6 @@ def lancarFrequencias(alunos,professores,turmas):
                         if DRE == al['DRE']:
                             if 'Frequencias' in al:
                                 print(formatarCalendario(al['Frequencias']))
-                                freq_data = input("Digite a data (dd/mm/yyyy): ")
-                                freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
                                 al['Frequencias'][f'{freq_data}'] = freq_status
                                 b = True
                                 print(formatarCalendario(al['Frequencias']))
@@ -260,19 +245,19 @@ def lancarFrequencias(alunos,professores,turmas):
                                 al['Frequencias'][f'{freq_data}'] = freq_status
                                 alunos.write(f'{al}\n')
                         else:
-                                alunos.write(f'{al}\n')
+                            alunos.write(f'{al}\n')
                     else:
                         alunos.write(f'{al}\n')
         if b == False:
             print("Aluno não encontrado.")
 
         op = input("Pressione 'n' para sair, 's' para continuar: ")
-    menuProfessor(alunos,professores,turmas)
+    menuProfessor()
 
 def formatarCalendario(frequencias):
     
     # Organiza as frequências por mês
-    meses = {1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}, 9: {}, 10: {}, 11: {}, 12: {}}
+    meses = {i: {} for i in range(1, 13)}
     for data, freq in frequencias.items():
         dia, mes, ano = map(int, data.split('/'))
         meses[mes][dia] = freq
@@ -311,16 +296,7 @@ def formatarCalendario(frequencias):
     
     return cal
 
-    ''' Exemplo de uso
-    frequencias = {
-        "01/01/2024": 1,       Presença não lançada no dia 1 de janeiro de 2024
-        "02/01/2024": 2,       Presença no dia 2 de janeiro de 2024
-        "15/02/2024": 3,       Falta no dia 15 de fevereiro de 2024
-        "28/02/2024": 1        Presença não lançada no dia 28 de fevereiro d
-    }
-    '''
-
-def Verfrequencia(cal):
+def Verfrequencia():
     op = 's'
     b = False
     while op != 'n':
@@ -338,42 +314,42 @@ def Verfrequencia(cal):
     if b == False : print("Disciplina não encontrada.") 
     menuAluno()
 
-def lancarNotas(alunos,professores,turmas):
+def lancarNotas():
     op = 's'
-    with open('alunos.txt', 'r') as alunos:
-        while op != 'n':
-            avaliacoes = {}
-            codigoD = input("Digite o codigo da disciplina que deseja lançar notas:")
-            codigoT = input("Digite o codigo da turma:")
-            for aluno in alunos:
-                al = ast.literal_eval(aluno.strip())
+    while op != 'n':
+        codigoD = input("Digite o codigo da disciplina que deseja lançar notas:")
+        codigoT = input("Digite o codigo da turma:")
+        avaliacoes = {}
+        with open('alunos.txt', 'r') as alunos:
+            linhas = alunos.readlines()
+        with open('alunos.txt', 'w') as alunos:
+            for linha in linhas:
+                al = ast.literal_eval(linha.strip())
                 if al['Codigo da disciplina'] == codigoD and al['Codigo da turma'] == codigoT:
-                    print(aluno)
+                    print(al)
                     i = 0
+                    op2 = 's'
                     while op2 != 'n':
                         nota = input("Digite o valor da nota: ")
                         op2 = input("Digite s/n para finalizar ou continuar adicionando notas.")
                         avaliacoes[f'Avaliacao {i+1}'] = nota
-                        i+=1
-                else:
-                    with open('alunos.txt', 'r') as alunos:
-                        alunos.write(aluno)
-                al['Avaliacoes'] = avaliacoes
+                        i += 1
+                    al['Avaliacoes'] = avaliacoes
                 alunos.write(f'{al}\n')
-            op = input("Pressione 'n' para sair, 's' para continuar.")
-    menuProfessor(alunos,professores,turmas)
+        op = input("Pressione 'n' para sair, 's' para continuar.")
+    menuProfessor()
 
-def Vernotas(alunos,professores,turmas):
+def Vernotas():
     nome = input("Digite o seu nome completo:")
     DRE = input("Digite o seu DRE:")
     with open('alunos.txt', 'r') as alunos:
         for aluno in alunos:
             al = ast.literal_eval(aluno.strip())
-            if al['Nome'].lower() == nome.lower() and al['DRE'].lower == DRE.lower():
-                print(aluno['Avaliacoes'])
-    menuAluno(alunos,professores,turmas)
+            if al['Nome'].lower() == nome.lower() and al['DRE'].lower() == DRE.lower():
+                print(al['Avaliacoes'])
+    menuAluno()
 
-def VercalculoNotas(alunos,professores,turmas):
+def VercalculoNotas():
     op = 's'
     while op != 'n':
         codigoD = input("Digite o código da disciplina para exibir o cálculo da nota final: ")
@@ -384,14 +360,15 @@ def VercalculoNotas(alunos,professores,turmas):
                 if infoTurma['Codigo da disciplina'] == codigoD:
                     print(f"Nota Final da disciplina {infoTurma['Nome']}: {infoTurma['Nota final']}")
             op = input("Pressione 'n' para sair, 's' para continuar.")
-            print("Disciplina não encontrada.")
-    menuAluno(alunos,professores,turmas)
+    if op == 'n':
+        print("Disciplina não encontrada.")
+    menuAluno()
 
 def VerpontosNecessarios():
     # Função para ver pontos necessários para aprovação
     menuAluno()
 
-def menuProfessor(alunos,professores,turmas):
+def menuProfessor():
     op = 's'
     while op != 'n':
         print("1 - Cadastro de turma")
@@ -402,25 +379,25 @@ def menuProfessor(alunos,professores,turmas):
         print("6 - Lançar frequências")
         tarefa = input("Digite o número ou 'sair' para sair: ")
         if tarefa == '1':
-            cadastroTurma(alunos,professores,turmas)
+            cadastroTurma()
         elif tarefa == '2':
-            edicaoTurma(alunos,professores,turmas)
+            edicaoTurma()
         elif tarefa == '3':
-            excTurma(alunos,professores,turmas)
+            excTurma()
         elif tarefa == '4':
-            Alunos(alunos,professores,turmas)
+            Alunos()
         elif tarefa == '5':
-            lancarNotas(alunos,professores,turmas)
+            lancarNotas()
         elif tarefa == '6':
-            lancarFrequencias(alunos,professores,turmas)
+            lancarFrequencias()
         elif tarefa == 'sair':
             return 0
         else:
             print("Opção errada.")
         op = input("Digite s/n se deseja continuar.")
-    identificacao(alunos,professores,turmas)
+    identificacao()
 
-def menuAluno(alunos,professores,turmas):
+def menuAluno():
     op = 's'
     while op != 'n':
         print("1 - Notas")
@@ -439,10 +416,8 @@ def menuAluno(alunos,professores,turmas):
         else:
             print("Opção errada.")
         op = input("Digite s/n se deseja continuar.")
-    identificacao(alunos,professores,turmas)
 
-def identificacao(alunos,professores,turmas):
-
+def identificacao():
     tipo = input("Informe aluno, professor ou sair se desejar encerrar o programa: ")
     if tipo.lower() == 'sair':
         return 0
@@ -452,15 +427,16 @@ def identificacao(alunos,professores,turmas):
             nome = input("Digite o seu nome completo: ")
             DRE = input("Digite o seu DRE: ")
             c = False
-            for linha in alunos:
+            for linha in linhas:
                 al = ast.literal_eval(linha.strip())
                 if al['Nome'].lower() == nome.lower() and al['DRE'].lower() == DRE.lower():
                     c = True
                     print("Login bem-sucedido.")
-                    menuAluno(alunos,professores,turmas)
+                    menuAluno()
+                    return
             if not c:
                 print("Nome ou/e DRE incorretos, digite novamente.")
-
+    
     elif tipo.lower() == 'professor':
         while True:
             r = input("Deseja se cadastrar(s/n)? ").lower()
@@ -476,44 +452,36 @@ def identificacao(alunos,professores,turmas):
                     codigoD = input("Digite o codigo da disciplina: ")
                     dias_aulas = input("Digite os dias da semana que tem aula (ex: segunda, quarta): ").split(', ')
                     frequencias = gerar_frequencias(dias_aulas)
-                    frequencias_globais[f'{codigoD}'] = frequencias
-                    disciplinas[chave] = frequencias_globais
+                    disciplinas[chave] = codigoD
                 professor = {
                     'Nome': login,
                     'Senha': senha_hash,
                     'Disciplinas': disciplinas
-            
                 }
                 with open('professores.txt', 'a') as cadastro:
                     cadastro.write(f'{professor}\n')
                 print("Usuário cadastrado com sucesso. Agora faça o login.")
-                
-
+            
             while True:
                 login = input("Digite o nome de usuário: ")
                 senha = input("Digite a senha: ")
                 senha_hash = hashlib.sha256(senha.encode()).hexdigest()
                 c = False
-                for linha in professores:
-                    informacoes = ast.literal_eval(linha.strip())
-                    if informacoes['Nome'].lower() == login.lower() and informacoes['Senha'] == senha_hash:
-                        c = True
-                        print("Login bem-sucedido.")
-                        menuProfessor(alunos,professores,turmas)
+                with open('professores.txt', 'r') as cadastro:
+                    linhas = cadastro.readlines()
+                    for linha in linhas:
+                        informacoes = ast.literal_eval(linha.strip())
+                        if informacoes['Nome'].lower() == login.lower() and informacoes['Senha'] == senha_hash:
+                            c = True
+                            print("Login bem-sucedido.")
+                            menuProfessor()
+                            return
                 if not c:
                     print("Usuário ou/e senha incorretos, digite novamente.")
                     break
         
     else:
         print("Opção não identificada, digite se você é aluno ou professor.")
-        identificacao(alunos,professores,turmas)
-    return alunos,professores,turmas
+        identificacao()
 
-alunos, professores, turmas = ler_arquivos()
-alunos, professores, turmas = identificacao(alunos, professores, turmas)
-
-
-
-
-
-
+identificacao()

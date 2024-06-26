@@ -1,7 +1,8 @@
 professor
 n
-lu
-lu
+luciana
+270101
+
 1
 1
 comp2
