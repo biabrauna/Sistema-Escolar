@@ -3,6 +3,7 @@ import hashlib
 import calendar
 from datetime import datetime, timedelta
 from termcolor import colored
+import copy
 
 # Dicionário global para armazenar as frequências
 frequencias_globais = {}
@@ -162,69 +163,85 @@ def Alunos(alunos,professores,turmas):
         print("2 - Para modificar as frequências de um aluno.")
         print("3 - Cadastrar um aluno.")
         op = input("Digite o número e 'n' para voltar ao menu inicial: ")
-        with open('alunos.txt', 'r') as alunos:
-                linhas = alunos.readlines()
-        with open('alunos.txt', 'w') as alunos:
-            if op =='1':
-                    for linha in linhas:
-                        print(linha)
-                    DRE = input("Digite o DRE do aluno:")
-                    for linha in linhas:
-                        al = ast.literal_eval(linha.strip())
-                        if al['DRE'] == DRE:
-                            print(al)
-                            if 'Notas' in al:
-                                numero = float(input("Digite qual o numero da avaliação que deseja alterar (1,2,3,...): "))
-                                nota = float(input("Digite a nova nota: "))
-                                al['Notas'][numero-1] = nota
-                            else:
-                                print("O aluno ainda não tem notas lançadas.")
-                                al['Notas'] = []
-                        else:
-                            with open('alunos.txt', 'w') as alunos:
-                                alunos.write(linha)
-                        alunos.write(f'{al}\n')
-            elif op =='2':
-                    for linha in linhas:
-                        print(linha)
-                    DRE = input("Digite o DRE do aluno:")
-                    for linha in linhas:
-                        al = ast.literal_eval(linha.strip())
-                        while b != 'n':
-                            print(formatarCalendario(al['Frequencias']))
-                            freq_data = input("Digite a data (dd/mm/yyyy): ")
-                            freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
-                            al['Frequencias'][f'{freq_data}'] = freq_status
-                            print(formatarCalendario(al['Frequencias']))
-                            alunos.write(f'{al}\n')
-                            b = input("Digite s/n para continuar ou não.")
-                    
-            elif op == '3':
-                codigoD = input("Digite o codigo da disciplina: ")
-                codigoT = input("Digite o codigo da turma: ")
-                nomeA = input("Digite o nome completo do aluno:")
+        if op == '1':
+            for linha in alunos:
+                print(linha)
                 DRE = input("Digite o DRE do aluno:")
-                # problema grave
-                prof_dict = ast.literal_eval(professores.strip())
-                disciplinas = prof_dict['Disciplinas']
+                for linha in alunos:
+                    al = ast.literal_eval(linha.strip())
+                    if al['DRE'] == DRE:
+                        print(al)
+                        if 'Notas' in al:
+                            numero = float(input("Digite qual o numero da avaliação que deseja alterar (1,2,3,...): "))
+                            nota = float(input("Digite a nova nota: "))
+                            al['Notas'][numero-1] = nota
+                            aluno_modificado = copy.deepcopy(al)
+                        else:
+                            print("O aluno ainda não tem notas lançadas.")
+                            al['Notas'] = []
+                            aluno_modificado = copy.deepcopy(al)
+        elif op =='2':
+            b = 's'
+            for linha in alunos:
+                print(linha)
+            DRE = input("Digite o DRE do aluno:")
+            for linha in alunos:
+                al = ast.literal_eval(linha.strip())
+                while b != 'n':
+                    if al['DRE'] == DRE:
+                        print(formatarCalendario(al['Frequencias']))
+                        freq_data = input("Digite a data (dd/mm/yyyy): ")
+                        freq_status = int(input("Digite a frequência (1 para presença e 0 para falta): "))
+                        al['Frequencias'][f'{freq_data}'] = freq_status
+                        print(formatarCalendario(al['Frequencias']))
+                        aluno_modificado = copy.deepcopy(al)
+                        b = input("Digite s/n para continuar ou não.")
+        elif op == '3':
+            codigoD = input("Digite o codigo da disciplina: ")
+            codigoT = input("Digite o codigo da turma: ")
+            nomeA = input("Digite o nome completo do aluno:")
+            DRE = input("Digite o DRE do aluno:")
+            for professor in professores:
+                prof_dict = ast.literal_eval(professor.strip())
+                if 'Disciplinas' in prof_dict:
+                    disciplinas = prof_dict['Disciplinas']
 
-                # Acessar a disciplina específica (comp3)
-                disciplina = disciplinas['comp3']
+                        # Verificar se a chave 'comp3' existe
+                    if 'comp3' in disciplinas:
+                        comp3 = disciplinas['comp3']
 
-                # Acessar a turma específica (23)
-                turma = disciplina[f'{codigoD}']
-                al = { 'Nome': nomeA, 
+                            # Verificar se a chave '23' existe
+                        if '23' in comp3:
+                            datas = comp3['23']
+
+                                # Agora, podemos acessar o dicionário de datas
+                            print(datas)
+                                
+                                # Acessar um valor específico
+                            if '10/06/2024' in datas:
+                                valor = datas['10/06/2024']
+                                print(valor)  # Isso imprimirá 2
+
+            al = { 'Nome': nomeA, 
                         'DRE': DRE,
                         'Codigo da disciplina': codigoD,
                         'Codigo da turma': codigoT,
-                        'Frequencias': turma
+                        'Frequencias': datas
                 }
-                with open('alunos.txt', 'a') as alunos:
-                    alunos.write(f'{al}')
-                print("Aluno cadastrado com sucesso.")
+            with open('alunos.txt', 'a') as alunos:
+                alunos.write('\n')
+                alunos.write(f'{al}')
+            print("Aluno cadastrado com sucesso.")
 
-            else:
-                op = input("Opção incorreta, pressione 'n' para sair.")
+        else:
+            op = input("Opção incorreta, pressione 'n' para sair.")
+    # Escrevendo as alteraçoes para não interferir na leitura de nenhum arquivo
+    
+        with open('alunos.txt','w') as alunos:
+            alunos.write(f'{alunos_modificado}')
+            for aluno in alunos:
+                alunos.write(f'{aluno}')
+
     menuProfessor(alunos,professores,turmas)
 
 print(frequencias_globais)

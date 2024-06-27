@@ -1,8 +1,8 @@
 professor
 n
-luciana
+jane
 270101
-
+4
 1
 1
 comp2
