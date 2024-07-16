@@ -1,0 +1,5 @@
+{'Nome': 'rafael', 'Senha': 'fa36c2bb7ffde432fa4e8149423d3c451fc625965d9d3dc25dd56e70d7cca393', 'Disciplinas': {'comp1': '3', 'comp2': '4'}}
+{'Nome': 'luciana', 'Senha': 'fa36c2bb7ffde432fa4e8149423d3c451fc625965d9d3dc25dd56e70d7cca393', 'Disciplinas': {'portugues': '1', 'ingles': '2'}}
+{'Nome': 'bia', 'Senha': 'fa36c2bb7ffde432fa4e8149423d3c451fc625965d9d3dc25dd56e70d7cca393', 'Disciplinas': {'frances': '5', 'espanhol': '7'}}
+{'Nome': 'samuel', 'Senha': 'fa36c2bb7ffde432fa4e8149423d3c451fc625965d9d3dc25dd56e70d7cca393', 'Disciplinas': {'matematica': '6', 'ciencias': '9'}}
+{'Nome': 'jane', 'Senha': 'fa36c2bb7ffde432fa4e8149423d3c451fc625965d9d3dc25dd56e70d7cca393', 'Disciplinas': {'comp3': {'23': {'10/06/2024': 2, '17/06/2024': 2, '24/06/2024': 2, '01/07/2024': 2, '08/07/2024': 2, '15/07/2024': 2, '22/07/2024': 2}}}}

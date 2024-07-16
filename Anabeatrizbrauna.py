@@ -3,7 +3,9 @@ import hashlib  # Módulo para hashes criptográficos seguros
 from datetime import datetime, timedelta  # Módulos para manipulação de datas
 from termcolor import colored # Módulo para adicionar cores
 import calendar # Módulo para visualizar o calendário
-import os
+import os # Módulo para manipular arquivos
+
+# Manipulação de arquivos
 
 def ler_arquivos():
     # Função para ler os arquivos de alunos, professores e turmas e retornar seus conteúdos como listas
@@ -36,6 +38,12 @@ def salvarTurmas(filename, turmas):
     except IOError:
         print(colored(f"Erro ao salvar no arquivo '{filename}'."),'red')
         return False
+
+def verificar_ou_criar_arquivo(filename, dados_iniciais):
+    if not os.path.exists(filename):
+        with open(filename, 'w') as f:
+            for item in dados_iniciais:
+                f.write(str(item) + '\n')
 
 # Sessão dos professores
 
@@ -673,7 +681,7 @@ def VerificarAprovacao(alunos, turmas):
     # Volta ao menu principal do aluno
     menuProfessor(alunos, professores, turmas)
 
-# Funções para os alunos
+# Sessão dos alunos
 
 def Verfrequencia(alunos, DRE):
     op = 's'
@@ -845,6 +853,7 @@ def VerpontosNecessarios(alunos, turmas, DRE):
     menuAluno(alunos, professores, turmas, DRE)
 
 # Menus e identificação
+
 def menuProfessor(alunos, professores, turmas):
         try:
             print("\n### Menu do Professor ###")
@@ -1006,17 +1015,6 @@ def identificacao(alunos, professores, turmas):
         print(f"Ocorreu um erro inesperado: {e}")
     
     return alunos, professores, turmas
-
-def verificar_ou_criar_arquivo(filename, dados_iniciais):
-    if not os.path.exists(filename):
-        with open(filename, 'w') as f:
-            for item in dados_iniciais:
-                f.write(str(item) + '\n')
-
-# Escreve uma linha no arquivo
-def escrever_linha_no_arquivo(filename, linha):
-    with open(filename, 'a') as f:
-        f.write(str(linha) + '\n')
 
 if __name__ == '__main__':
     # Arquivos
