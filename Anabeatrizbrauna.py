@@ -5,6 +5,8 @@ from termcolor import colored # Módulo para adicionar cores
 import calendar # Módulo para visualizar o calendário
 import os # Módulo para manipular arquivos
 
+frequencias_globais = {}
+
 # Manipulação de arquivos
 
 def ler_arquivos():
