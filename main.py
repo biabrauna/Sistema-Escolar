@@ -4,6 +4,8 @@ from datetime import datetime, timedelta  # Módulos para manipulação de datas
 from termcolor import colored # Módulo para adicionar cores
 import calendar # Módulo para visualizar o calendário
 import os # Módulo para manipular arquivos
+import tkinter as tk
+from tkinter import messagebox
 
 frequencias_globais = {}
 
@@ -1017,6 +1019,132 @@ def identificacao(alunos, professores, turmas):
         print(f"Ocorreu um erro inesperado: {e}")
     
     return alunos, professores, turmas
+
+def menuProfessor(alunos, professores, turmas):
+    professor_window = tk.Tk()
+    professor_window.title("Menu do Professor")
+
+    def execute_task(task):
+        if task == 1:
+            cadastroTurma(alunos, professores, turmas)
+        elif task == 2:
+            edicaoTurma(turmas)
+        elif task == 3:
+            excTurma(alunos, professores, turmas)
+        elif task == 4:
+            Alunos(alunos, professores, turmas)
+        elif task == 5:
+            lancarNotas(alunos, professores, turmas)
+        elif task == 6:
+            lancarFrequencias(alunos, professores, turmas)
+        elif task == 7:
+            VerificarAprovacao(alunos, turmas)
+        professor_window.destroy()
+
+    tk.Label(professor_window, text="### Menu do Professor ###").pack()
+    tasks = [
+        ("Cadastro de turma", 1),
+        ("Edição de turma", 2),
+        ("Exclusão de turma", 3),
+        ("Alunos", 4),
+        ("Lançar notas", 5),
+        ("Lançar frequências", 6),
+        ("Verificar número de aprovados", 7),
+    ]
+
+    for task, value in tasks:
+        tk.Button(professor_window, text=task, command=lambda v=value: execute_task(v)).pack()
+
+    tk.Button(professor_window, text="Sair", command=professor_window.destroy).pack()
+    professor_window.mainloop()
+
+def menuAluno(alunos, professores, turmas, DRE):
+    aluno_window = tk.Tk()
+    aluno_window.title("Menu do Aluno")
+
+    def execute_task(task):
+        if task == 1:
+            Vernotas(alunos, DRE)
+        elif task == 2:
+            VercalculoNotas(alunos, turmas, DRE)
+        elif task == 3:
+            Verfrequencia(alunos, DRE)
+        elif task == 4:
+            VerpontosNecessarios(alunos, turmas, DRE)
+        aluno_window.destroy()
+
+    tk.Label(aluno_window, text="### Menu do Aluno ###").pack()
+    tasks = [
+        ("Notas", 1),
+        ("Ver cálculo da média final", 2),
+        ("Frequência", 3),
+        ("Quantos pontos são necessários para a aprovação", 4),
+    ]
+
+    for task, value in tasks:
+        tk.Button(aluno_window, text=task, command=lambda v=value: execute_task(v)).pack()
+
+    tk.Button(aluno_window, text="Sair", command=aluno_window.destroy).pack()
+    aluno_window.mainloop()
+
+def identificacao(alunos, professores, turmas):
+    main_window = tk.Tk()
+    main_window.title("Identificação")
+
+    def aluno_login():
+        login_window = tk.Toplevel(main_window)
+        login_window.title("Login Aluno")
+
+        tk.Label(login_window, text="Digite o seu DRE:").pack()
+        dre_entry = tk.Entry(login_window)
+        dre_entry.pack()
+
+        def verify_aluno():
+            DRE = dre_entry.get()
+            for linha in alunos:
+                al = ast.literal_eval(linha.strip())
+                if al['DRE'] == DRE:
+                    messagebox.showinfo("Login", "Login bem-sucedido.")
+                    login_window.destroy()
+                    menuAluno(alunos, professores, turmas, DRE)
+                    return
+            messagebox.showerror("Erro", "DRE incorreto, tente novamente.")
+
+        tk.Button(login_window, text="Entrar", command=verify_aluno).pack()
+
+    def professor_login():
+        login_window = tk.Toplevel(main_window)
+        login_window.title("Login Professor")
+
+        tk.Label(login_window, text="Nome de usuário:").pack()
+        username_entry = tk.Entry(login_window)
+        username_entry.pack()
+
+        tk.Label(login_window, text="Senha:").pack()
+        password_entry = tk.Entry(login_window, show='*')
+        password_entry.pack()
+
+        def verify_professor():
+            login = username_entry.get()
+            senha = password_entry.get()
+            senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+            for linha in professores:
+                informacoes = ast.literal_eval(linha.strip())
+                if informacoes['Nome'].lower() == login.lower() and informacoes['Senha'] == senha_hash:
+                    messagebox.showinfo("Login", "Login bem-sucedido.")
+                    login_window.destroy()
+                    menuProfessor(alunos, professores, turmas)
+                    return
+            messagebox.showerror("Erro", "Usuário ou senha incorretos, tente novamente.")
+
+        tk.Button(login_window, text="Entrar", command=verify_professor).pack()
+
+    tk.Label(main_window, text="### Identificação ###").pack()
+    tk.Button(main_window, text="Aluno", command=aluno_login).pack()
+    tk.Button(main_window, text="Professor", command=professor_login).pack()
+    tk.Button(main_window, text="Sair do Programa", command=main_window.destroy).pack()
+
+    main_window.mainloop()
 
 if __name__ == '__main__':
     # Arquivos
